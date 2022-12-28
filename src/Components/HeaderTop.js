@@ -5,7 +5,7 @@ import { COLORS } from '../Constant/Colors'
 
 const HeaderTop = (props) => {
     return (
-        <View style={{backgroundColor:COLORS.overseaspurple, height:58, flexDirection:'row', alignItems:'center', elevation:8}}>
+        <View style={{backgroundColor:COLORS.overseaspurple, height:58, flexDirection:'row', alignItems:'center', elevation:10}}>
             <TouchableOpacity style={{ paddingVertical:10}} onPress={()=>props.back()}>
                 <Image source={require('../images/arrow.png')} style={{ height: 22, width: 22, marginHorizontal:20 }} />
             </TouchableOpacity>

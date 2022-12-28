@@ -55,6 +55,7 @@ export const ButtonStyle = props => {
         borderRadius: borderRadius? borderRadius: 32,
           backgroundColor: bgColor ? bgColor : '#FB802A',
           marginHorizontal: marginHorizontal ? marginHorizontal : 15,
+          elevation:7
         },
       ]}>
       {loader ?

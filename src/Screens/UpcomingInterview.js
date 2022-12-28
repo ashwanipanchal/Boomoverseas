@@ -91,7 +91,7 @@ const UpcomingInterview = ({navigation}) => {
     <FlatList
           data={jobs}
           renderItem={({ item }) => (
-            <TouchableOpacity activeOpacity={0.9} onPress={()=>navigation.navigate("JobDetails")} style={{ backgroundColor: '#FFF', marginHorizontal: 16, marginVertical: 10, paddingTop: 10, paddingHorizontal: 10, borderRadius: 10 }}>
+            <TouchableOpacity activeOpacity={0.9}  style={{ backgroundColor: '#FFF', marginHorizontal: 16, marginVertical: 10, paddingTop: 10, paddingHorizontal: 10, borderRadius: 10 }}>
               <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                 <Image source={item.jobIcon} style={{ marginRight: 10, resizeMode: 'contain', width: 52, height: 52 }} />
                 <View style={{ flex: 1 }}>
@@ -118,21 +118,21 @@ const UpcomingInterview = ({navigation}) => {
               <View style={{ flexDirection: 'row', justifyContent: 'space-evenly', marginTop: 10, alignItems:'center' }}>
                 <View style={{flexDirection:'row', alignItems:'center',width:'45%'}}>
                     <View style={{backgroundColor:COLORS.overseaspurple, height:5, width:5, borderRadius:50}}></View>
-                    <Text style={{marginLeft:5}}>Tile Mason</Text>
+                    <Text style={{marginLeft:5, color:COLORS.overseaspurple}}>Tile Mason</Text>
                 </View>
                 <View style={{flexDirection:'row', alignItems:'center',width:'45%'}}>
                     <View style={{backgroundColor:COLORS.overseaspurple, height:5, width:5, borderRadius:50}}></View>
-                    <Text style={{marginLeft:5}}>Tile Mason</Text>
+                    <Text style={{marginLeft:5, color:COLORS.overseaspurple}}>Tile Mason</Text>
                 </View>
               </View>
               <View style={{ flexDirection: 'row', justifyContent: 'space-evenly', marginTop: 10, alignItems:'center', }}>
                 <View style={{flexDirection:'row', alignItems:'center', width:'45%'}}>
                     <View style={{backgroundColor:COLORS.overseaspurple, height:5, width:5, borderRadius:50}}></View>
-                    <Text style={{marginLeft:5}}>Tile Mason</Text>
+                    <Text style={{marginLeft:5, color:COLORS.overseaspurple}}>Tile Mason</Text>
                 </View>
                 <View style={{flexDirection:'row', alignItems:'center', width:'45%'}}>
                     <View style={{backgroundColor:COLORS.overseaspurple, height:5, width:5, borderRadius:50}}></View>
-                    <Text style={{marginLeft:5}}>Tile Mason</Text>
+                    <Text style={{marginLeft:5, color:COLORS.overseaspurple}}>Tile Mason</Text>
                 </View>
               </View>
               <View style={{ backgroundColor: COLORS.overseaspurple, justifyContent: 'center', alignItems: 'center', height: 42, marginTop: 16 }}>

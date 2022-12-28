@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "887943739412",
+    "project_id": "boomoverseas-6ced6",
+    "storage_bucket": "boomoverseas-6ced6.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:887943739412:android:69d06b27cae6e666544f01",
+        "android_client_info": {
+          "package_name": "com.boomoverseas"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "887943739412-r4lctqplh44dumpsh9jtagtibsdv7nu9.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.boomoverseas",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "887943739412-fpnsd9alq6sssau33d1l0lmhbq0fgjpg.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDOlC6xv15ASBbcM7jCgHHVq6qw4CFDhk8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "887943739412-fpnsd9alq6sssau33d1l0lmhbq0fgjpg.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

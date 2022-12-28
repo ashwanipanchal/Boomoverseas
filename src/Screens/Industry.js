@@ -1,10 +1,21 @@
 import { FlatList, SafeAreaView, StatusBar, StyleSheet, Text, View, Image, TouchableOpacity } from 'react-native'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import HeaderTop from '../Components/HeaderTop'
 import { COLORS } from '../Constant/Colors'
 import StringsOfLanguages from '../Constant/LanguageStrings'
+import { Api } from '../services/Api'
 
 const Industry = ({navigation}) => {
+    const [list ,setList] = useState([])
+    useEffect(()=>{
+        getCategory()
+    },[])
+
+    const getCategory = async() => {
+        const ct = await Api.getcategory()
+        // alert(JSON.stringify(ct,null,2))
+        setList(ct.data)
+    }
     const data = [
         {
             icon: require('../images/marketing.png'),
@@ -60,7 +71,7 @@ const Industry = ({navigation}) => {
           <StatusBar barStyle="light-content" backgroundColor={COLORS.darkpurple} />
           <HeaderTop back={() => navigation.goBack()} title={StringsOfLanguages.industry} />
           <FlatList
-            data={data}
+            data={list}
             numColumns={3}
             renderItem={({item})=>(
                 <TouchableOpacity activeOpacity={0.9} onPress={()=>navigation.navigate('IndustryJobList',{title:item.title})} style={{alignItems:'center', backgroundColor:'#FFF', width:'28%', paddingVertical:10, margin:10, borderRadius:10,}}>

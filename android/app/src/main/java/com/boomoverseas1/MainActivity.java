@@ -1,4 +1,4 @@
-package com.boomoverseas;
+package com.boomoverseas1;
 
 import com.facebook.react.ReactActivity;
 import com.facebook.react.ReactActivityDelegate;

@@ -4,9 +4,42 @@ import { COLORS } from '../Constant/Colors'
 import OTPInputView from '@twotalltotems/react-native-otp-input'
 import HeaderTop from '../Components/HeaderTop'
 import { ButtonStyle } from '../Custom/CustomView'
+import Toast from 'react-native-simple-toast'
+import { BASE_URL } from '../services/Config'
 
-const OTP = ({navigation}) => {
+const OTP = ({navigation, route}) => {
+  // alert(JSON.stringify(route.params,null,2))
     const [otp, setOtp] = useState('');
+
+  const verifyotpHandler = async()=> {
+    if(!otp){
+      Toast.show('Please enter your OTP')
+      return
+    }
+    if(otp.length !== 4){
+      Toast.show('Please enter full OTP')
+      return
+    }
+    const response = await fetch(`${BASE_URL}verify-otp`, {
+      method: 'POST',
+      headers: {
+        "Accept": "application/json",
+        'Content-Type': 'application/json',
+      },
+      body:JSON.stringify({
+        number:route.params.number,
+        otp:otp,
+      })
+    })
+    const jsonres = await response.json()
+    const {status} = jsonres
+    if(status){
+      Toast.show(jsonres.message)
+      navigation.replace('Login')
+    }else{
+      Toast.show(jsonres.message)
+    }
+  }
   return (
       <SafeAreaView style={{ flex: 1, backgroundColor: '#FFF' }}>
           <StatusBar barStyle="light-content" backgroundColor={COLORS.darkpurple} />
@@ -33,6 +66,7 @@ const OTP = ({navigation}) => {
                   bgColor={'#261750'}
                   // loader={state.isLoading}
                   onPress={() => {
+                    verifyotpHandler()
                     //   navigation.navigate('JobOption');
                   }}
               />

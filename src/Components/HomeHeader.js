@@ -9,14 +9,14 @@ const HomeHeader = (props) => {
         <TouchableOpacity style={{paddingVertical:6}} onPress={()=>props.menuOption()}>
           <Image source={props.leftIcon} style={{ height: 24, width: 24, marginHorizontal: 20 }} />
         </TouchableOpacity>
-        <Text style={{ fontSize: 20, color: '#FFF', width:'50%'}}>{props.title}</Text>
+        <Text style={{ fontSize: 20, color: '#FFF', }}>{props.title}</Text>
       </View>
       <View style={{ flexDirection:'row'}}>
-        <TouchableOpacity style={{ paddingVertical:6}} onPress={()=>props.leftOption()}>
-          <Image source={props.firstRightIcon} style={{ height: 24, width: 24, marginHorizontal: 20 }} />
+        <TouchableOpacity style={{ paddingVertical:6, }} onPress={()=>props.leftOption()}>
+          <Image source={props.firstRightIcon} style={{ height: 24, width: 24,marginHorizontal:14 }} />
         </TouchableOpacity>
-        <TouchableOpacity style={{ paddingVertical:6}} onPress={()=>props.rightOption()}>
-          <Image source={props.secondRightIcon} style={{ height: 24, width: 24, marginHorizontal: 20 }} />
+        <TouchableOpacity style={{ paddingVertical:6,}} onPress={()=>props.rightOption()}>
+          <Image source={props.secondRightIcon} style={{ height: 24, width: 24,marginHorizontal:14  }} />
         </TouchableOpacity>
       </View>
     </View>

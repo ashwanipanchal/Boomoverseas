@@ -1,9 +1,40 @@
-import { StyleSheet, Text, View, SafeAreaView, StatusBar, FlatList, Image } from 'react-native'
-import React from 'react'
+import { StyleSheet, Text, View, SafeAreaView, StatusBar, FlatList, Image, TouchableOpacity, ActivityIndicator } from 'react-native'
+import React,{useState, useEffect} from 'react'
 import { COLORS } from '../Constant/Colors'
 import HeaderTop from '../Components/HeaderTop'
+import { Api, LocalStorage } from '../services/Api'
 
 const SavedJobs = ({navigation}) => {
+    const [list, setList] = useState([])
+    const [loading, setLoading] = useState(false)
+    useEffect(()=>{
+        getList()
+    },[])
+
+    const getList = async() => {
+        const res = await Api.getsavedjobs()
+        // alert(JSON.stringify(res,null,2))
+        const {status} = res
+        if(status){
+            setList(res.data)
+        }
+    }
+
+    const unsaveJobs = async(item) => {
+        setLoading(true)
+        const value = (await LocalStorage.getUserDetail() || '')
+        const user = JSON.parse(value)
+        const body = {
+          user_id : user._id,
+          job_id : item._id
+        }
+        // alert(JSON.stringify(body,null,2))
+        // return
+        const res = await Api.removejob(body)
+        getList()
+        setLoading(false)
+        alert(JSON.stringify(res.message,null,2))
+      }
 
     const jobs = [
         {
@@ -68,21 +99,27 @@ const SavedJobs = ({navigation}) => {
       <SafeAreaView style={{ flex: 1, backgroundColor: '#f1f1f1' }}>
           <StatusBar barStyle="light-content" backgroundColor={COLORS.darkpurple} />
           <HeaderTop back={() => navigation.goBack()} title={"Saved Jobs"} />
+          {loading ? 
+          <View style={{alignItems:'center', justifyContent:'center', flex:1}}>
+            <ActivityIndicator size={'large'} color={COLORS.overseaspurple}/>
+          </View> :
           <FlatList
-              data={jobs}
+              data={list}
               renderItem={({ item }) => (
                   <View style={{ backgroundColor: '#FFF', marginHorizontal: 20, marginVertical: 10, paddingTop: 10, paddingHorizontal: 10, borderRadius: 10 }}>
                       <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                          <Image source={item.jobIcon} style={{ marginRight: 10, resizeMode: 'contain', width: 52, height: 52 }} />
+                          <Image source={require('../images/jobicon.png')} style={{ marginRight: 10, resizeMode: 'contain', width: 52, height: 52 }} />
                           <View style={{ flex: 1 }}>
-                              <Text style={{ color: COLORS.darkpurple, fontSize: 16, fontWeight: '700' }}>{item.jobTitle}</Text>
-                              <Text style={{ color: 'green', fontSize:16 }}>{item.hospitalName}</Text>
+                              <Text style={{ color: COLORS.darkpurple, fontSize: 16, fontWeight: '700' }}>{item.title}</Text>
+                              <Text style={{ color: 'green', fontSize:16 }}>{item.industry}</Text>
                               <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginRight: 5 }}>
                                   <Text style={{ color: COLORS.darkpurple, fontSize: 12, color:'gray' }}>{item.id}</Text>
                                   <Text style={{ color: COLORS.darkpurple, fontSize: 12, color:'gray' }}>{item.postDate}</Text>
                               </View>
                           </View>
-                          <Image source={item.favIcon} style={{ marginRight: 10, resizeMode: 'contain', width: 24, height: 24 }} />
+                          <TouchableOpacity onPress={()=> unsaveJobs(item)}>
+                            <Image source={require('../images/fav.png')} style={{ marginRight: 10, resizeMode: 'contain', width: 24, height: 24 }} />
+                          </TouchableOpacity>
                       </View>
                       <View style={{ flexDirection: 'row', justifyContent: 'space-between',marginTop:10 }}>
                           <View style={{alignItems:'center', flexDirection:'row'}}>
@@ -136,7 +173,7 @@ const SavedJobs = ({navigation}) => {
                   </View>
                   
               )}
-          />
+          />}
       </SafeAreaView>
   )
 }

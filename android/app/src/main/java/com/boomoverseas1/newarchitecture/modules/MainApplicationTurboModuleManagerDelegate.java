@@ -1,4 +1,4 @@
-package com.boomoverseas.newarchitecture.modules;
+package com.boomoverseas1.newarchitecture.modules;
 
 import com.facebook.jni.HybridData;
 import com.facebook.react.ReactPackage;

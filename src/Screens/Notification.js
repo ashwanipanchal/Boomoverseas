@@ -54,7 +54,7 @@ const Notification = ({navigation}) => {
     <FlatList
       data={data}
       renderItem={({item})=> (
-          <View style={{flexDirection:'row', backgroundColor:'#FFF', alignItems:'center', marginTop:20, marginHorizontal:20, paddingVertical:18, paddingHorizontal:18, borderRadius:10}}>
+          <View style={{flexDirection:'row', backgroundColor:'#FFF', alignItems:'center', marginTop:15, marginHorizontal:15, paddingVertical:10, paddingHorizontal:18, borderRadius:10, elevation:2, marginBottom:2}}>
               <Image source={item.icon} style={{width:28, height:28, resizeMode:'contain'}}/>
               <View style={{ marginLeft:10,}}>
                   <Text style={{ color: COLORS.darkpurple, fontSize:20 }}>{item.title}</Text>

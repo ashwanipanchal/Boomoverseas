@@ -27,6 +27,14 @@ import SavedJobs from '../Screens/SavedJobs';
 import IndustryJobList from '../Screens/IndustryJobList';
 import EditProfile from '../Screens/EditProfile';
 import UpcomingInterview from '../Screens/UpcomingInterview';
+import MyJobs from '../Screens/MyJobs';
+import RecommendedJobs from '../Screens/RecommendedJobs';
+import Payment from '../Screens/Payment';
+import Subscription from '../Screens/Subscription';
+import Documents from '../Screens/Documents';
+import ActivePackage from '../Screens/ActivePackage';
+import SearchResult from '../Screens/SearchResult';
+import WebViewScreen from '../Screens/WebViewScreen';
 
 
 
@@ -111,6 +119,11 @@ const StackNavigator = () => {
                     options={{ headerShown: false }}
                 />
                 <Stack.Screen
+                    name="SearchResult"
+                    component={SearchResult}
+                    options={{ headerShown: false }}
+                />
+                <Stack.Screen
                     name="Profile"
                     component={Profile}
                     options={{ headerShown: false }}
@@ -168,6 +181,36 @@ const StackNavigator = () => {
                 <Stack.Screen
                     name="UpcomingInterview"
                     component={UpcomingInterview}
+                    options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                    name="MyJobs"
+                    component={MyJobs}
+                    options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                    name="RecommendedJobs"
+                    component={RecommendedJobs}
+                    options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                    name="Payment"
+                    component={Payment}
+                    options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                    name="Subscription"
+                    component={Subscription}
+                    options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                    name="ActivePackage"
+                    component={ActivePackage}
+                    options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                    name="WebViewScreen"
+                    component={WebViewScreen}
                     options={{ headerShown: false }}
                 />
             </Stack.Navigator>
