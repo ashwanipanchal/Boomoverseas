@@ -4,6 +4,7 @@ import HeaderTop from '../Components/HeaderTop'
 import { COLORS } from '../Constant/Colors'
 import StringsOfLanguages from '../Constant/LanguageStrings'
 import { Api } from '../services/Api'
+import { BASE_URL } from '../services/Config'
 
 const Industry = ({navigation}) => {
     const [list ,setList] = useState([])
@@ -74,8 +75,8 @@ const Industry = ({navigation}) => {
             data={list}
             numColumns={3}
             renderItem={({item})=>(
-                <TouchableOpacity activeOpacity={0.9} onPress={()=>navigation.navigate('IndustryJobList',{title:item.title})} style={{alignItems:'center', backgroundColor:'#FFF', width:'28%', paddingVertical:10, margin:10, borderRadius:10,}}>
-                    <Image source={item.icon} style={{width:72, height:72}}/>
+                <TouchableOpacity activeOpacity={0.9} onPress={()=>navigation.navigate('IndustryJobList',{title:item.title, id:item._id})} style={{alignItems:'center', backgroundColor:'#FFF', width:'28%', paddingVertical:10, margin:10, borderRadius:10,}}>
+                    <Image source={{uri : `${BASE_URL}${item?.icon?.name}`}} style={{width:72, height:72}}/>
                     <Text style={{color:'gray', marginTop:10, fontSize:16}}>{item.title}</Text>
                 </TouchableOpacity>
             )}

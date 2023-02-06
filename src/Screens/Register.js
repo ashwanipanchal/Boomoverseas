@@ -18,6 +18,7 @@ const Register = ({navigation}) => {
   const [mname, setMname] = useState("")
   const [lname, setLname] = useState("")
   const [number, setNumber] = useState("")
+  const [countryCode, setCountryCode] = useState("91")
   const [option, setOption] = useState("Male")
   const [email, setEmail] = useState("")
   const [passport, setPassport] = useState("")
@@ -63,6 +64,10 @@ const Register = ({navigation}) => {
       Toast.show('Please enter your first name');
       return;
     }
+    if (!countryCode) {
+      Toast.show('Please enter your country code');
+      return;
+    }
     if (!number) {
       Toast.show('Please enter your mobile number');
       return;
@@ -71,7 +76,7 @@ const Register = ({navigation}) => {
       Toast.show('Please enter your Date of Birth');
       return;
     }
-    if (!dob) {
+    if (!tradeValue) {
       Toast.show('Please select your trade');
       return;
     }
@@ -87,10 +92,11 @@ const Register = ({navigation}) => {
         email:email,
         firstName:fname,
         lastName:lname,
-        sex: option,
-        dob: dob,
+        gender: option,
+        dob: moment(dob).format('DD-MM-YYYY'),
         passport: passport,
-        trade: tradeValue == 'Other' ? otherTradeValue : tradeValue
+        trade: tradeValue == 'Other' ? otherTradeValue : tradeValue,
+        countryCode 
     }
     // alert(JSON.stringify(body,null,2))
     // return
@@ -104,7 +110,8 @@ const Register = ({navigation}) => {
       setIsLoading(false)
       navigation.replace('OTP', response);
     }else{
-      alert(response.message)
+      alert(response.data.message)
+      setIsLoading(false)
     }
   }
 
@@ -172,19 +179,35 @@ const Register = ({navigation}) => {
               placeholder={'Last Name'}
               placeholderTextColor={'lightgray'}
             />
-            <Text style={{color:COLORS.overseaspurple, marginHorizontal:20, marginVertical:10}}>Mobile No.<Text style={{color:'red'}}>*</Text></Text>
 
+        <View style={{flexDirection:'row'}}>
+          <View>
+            <Text style={{ color: COLORS.overseaspurple, marginHorizontal: 20, marginVertical: 10 }}>Country Code<Text style={{ color: 'red' }}>*</Text></Text>
             <TextInput
-              value={number}
+              value={countryCode}
               keyboardType="number-pad"
-              maxLength={10}
-              onChangeText={text => setNumber(text)}
-              style={{ height:52, fontSize: 16, fontFamily: 'Poppins-SemiBold', color: 'black', backgroundColor:"#f7f7f7" , borderWidth:1, marginHorizontal:20, marginBottom:10, borderRadius:6, borderColor:"#f7f7f7", paddingLeft:10}}
-              placeholder={'Mobile No.'}
+              maxLength={3}
+              onChangeText={text => setCountryCode(text)}
+              style={{ height: 52, fontSize: 16, fontFamily: 'Poppins-SemiBold', color: 'black', backgroundColor: "#f7f7f7", borderWidth: 1, marginHorizontal: 20, marginBottom: 10, borderRadius: 6, borderColor: "#f7f7f7", paddingLeft: 10 }}
+              placeholder={'Code'}
               placeholderTextColor={'lightgray'}
             />
-            <Text style={{color:COLORS.overseaspurple, marginHorizontal:20, marginVertical:10}}>Email</Text>
+          </View>
 
+          <View style={{flex:1}}>
+          <Text style={{ color: COLORS.overseaspurple, marginHorizontal: 20, marginVertical: 10 }}>Mobile No.<Text style={{ color: 'red' }}>*</Text></Text>
+          <TextInput
+            value={number}
+            keyboardType="number-pad"
+            maxLength={10}
+            onChangeText={text => setNumber(text.replace(/[^0-9]/g, ''))}
+            style={{ height: 52, fontSize: 16, fontFamily: 'Poppins-SemiBold', color: 'black', backgroundColor: "#f7f7f7", borderWidth: 1, marginHorizontal: 20, marginBottom: 10, borderRadius: 6, borderColor: "#f7f7f7", paddingLeft: 10 }}
+            placeholder={'Mobile No.'}
+            placeholderTextColor={'lightgray'}
+          />
+          </View>
+        </View>
+            <Text style={{color:COLORS.overseaspurple, marginHorizontal:20, marginVertical:10}}>Email</Text>
             <TextInput
               value={email}
               onChangeText={text => setEmail(text)}
@@ -297,7 +320,7 @@ const Register = ({navigation}) => {
             />
             </>
             }
-            <Text style={{color:COLORS.overseaspurple, marginHorizontal:20, marginVertical:10}}>Password</Text>
+            <Text style={{color:COLORS.overseaspurple, marginHorizontal:20, marginVertical:10}}>Password<Text style={{color:'red'}}>*</Text></Text>
             <TextInput
               value={password}
               secureTextEntry

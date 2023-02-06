@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, StatusBar, SafeAreaView, ScrollView, Image, ActivityIndicator, TouchableOpacity } from 'react-native'
+import { StyleSheet, Text, View, StatusBar, SafeAreaView, ScrollView, Image, ActivityIndicator, TouchableOpacity, Share, Linking } from 'react-native'
 import React,{useState} from 'react'
 import HomeHeader from '../Components/HomeHeader'
 import { COLORS } from '../Constant/Colors'
@@ -6,6 +6,9 @@ import StringsOfLanguages from '../Constant/LanguageStrings'
 import Toast from 'react-native-simple-toast';
 import { Api, LocalStorage } from '../services/Api'
 import Modal from "react-native-modal";
+import moment from 'moment'
+import { BASE_URL } from '../services/Config'
+import { FloatingAction } from "react-native-floating-action";
 
 const JobDetails = ({navigation, route}) => {
   // alert(JSON.stringify(route.params,null,2))
@@ -57,23 +60,44 @@ const JobDetails = ({navigation, route}) => {
     }
   }
 
+
+  const shareJob = async() => {
+    let JobID;
+    JobID = `${route.params.title} Opening at  ${route.params.job_location} to find more Download our App from Playstore.`
+    try {
+      const result = await Share.share({
+        title: 'Job Detail',
+        message: `${JobID} https://play.google.com/store/apps/details?id=com.boomoverseas1`,
+        // url: 'https://play.google.com/store/apps/details?id=com.boomoverseas1'
+      });
+      if (result.action === Share.sharedAction) {
+        if (result.activityType) {
+          // shared with activity type of result.activityType
+        } else {
+          // shared
+        }
+      } else if (result.action === Share.dismissedAction) {
+        // dismissed
+      }
+    } catch (error) {
+      alert(error.message);
+    }
+  }
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#f5f5f5' }}>
       <StatusBar barStyle="light-content" backgroundColor={COLORS.darkpurple} />
-      <HomeHeader leftIcon={require('../images/arrow.png')} menuOption={() => navigation.goBack()} title={StringsOfLanguages.jobdetails} secondRightIcon={require('../images/share.png')}  rightOption={()=> alert('share')}
-        // alert(JSON.stringify(save,null,2))
-        // setSave(prevState => !prevState)
-         />
+      <HomeHeader leftIcon={require('../images/arrow.png')} menuOption={() => navigation.goBack()} title={StringsOfLanguages.jobdetails} secondRightIcon={require('../images/share.png')}  rightOption={()=> {shareJob()}}/>
         {loading ? <View style={{alignItems:'center', justifyContent:'center', flex:1}}>
             <ActivityIndicator size={'large'} color={COLORS.overseaspurple}/>
           </View> :
       <ScrollView>
         <View style={{ backgroundColor: COLORS.overseaspurple, height: 160, alignItems: 'center', justifyContent: 'center' }}>
           <Text style={{ color: '#fff', textAlign: 'center', justifyContent: 'center', alignSelf: 'center', fontSize: 22 }}>{route.params.title}</Text>
+          {route.params.show_company_name == "1" &&
           <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
-            <Image style={{ width: 48, height: 48 }} source={require('../images/jobicon.png')} />
-            <Text style={{ color: '#fff', marginLeft: 10 }}>Max India Pvt Ltd</Text>
-          </View>
+            <Image style={{ width: 48, height: 48,resizeMode: 'contain' }} source={{uri : `${BASE_URL}${route.params?.company_name?.company_image?.name}`}} />
+            <Text style={{ color: '#fff', marginLeft: 10 }}>{route.params?.company_name?.company_name}</Text>
+          </View>}
         </View>
         <TouchableOpacity activeOpacity={1} onPress={()=>{
           if (route.params.job_status == 1) {
@@ -86,8 +110,8 @@ const JobDetails = ({navigation, route}) => {
           <Text style={{ color: '#FFF', fontSize: 18 }}>{route.params?.job_status == '0' ? 'Apply Now' : 'Applied'}</Text>
         </TouchableOpacity>
         <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginHorizontal: 20, marginTop: 30 }}>
-          <Text style={{ color: 'gray' }}>Job ID IND1234</Text>
-          <Text style={{ color: 'gray' }}>Posted On Jan 12, 2022</Text>
+          <Text style={{ color: 'gray' }}>Job ID: {route.params?.new_job_id}</Text>
+          <Text style={{ color: 'gray' }}>Posted On {moment(route.params.job_post_date).format("MMM DD, YYYY")}</Text>
         </View>
         <View style={{  marginHorizontal: 20, marginTop: 10, paddingVertical: 10, paddingHorizontal: 10, borderRadius: 10 }}>
           <Text style={{ color: COLORS.darkpurple, fontSize: 18, marginBottom: 10 }}>Job Description</Text>
@@ -97,13 +121,77 @@ const JobDetails = ({navigation, route}) => {
         </View>
         <View style={{  marginHorizontal: 20, paddingVertical: 10, paddingHorizontal: 10, borderRadius: 10,}}>
           <Text style={{ color: COLORS.darkpurple, fontSize: 18, marginBottom: 10 }}>Job Details</Text>
-          <View style={{flexDirection:'row'}}>
-            <View style={{backgroundColor:COLORS.overseaspurple, height:10, width:10, borderRadius:50, marginTop:5}}></View>
-            <View style={{marginLeft:5}}>
-            <Text style={{ color: COLORS.darkpurple,}}>Basic Salary</Text>
-            <Text style={{ color: COLORS.darkpurple,}}>{route.params.salary} per month</Text>
+            {/* FirstRow */}
+            <View style={{ flexDirection: 'row', justifyContent:'space-between', marginBottom:8 }}>
+              <View style={{ flexDirection: 'row', width:'50%' }}>
+                <View style={{ backgroundColor: COLORS.overseaspurple, height: 10, width: 10, borderRadius: 50, marginTop: 5 }}></View>
+                <View style={{ marginLeft: 5 }}>
+                  <Text style={{ color: COLORS.darkpurple, }}>Basic Salary</Text>
+                  <Text style={{ color: COLORS.darkpurple, }}>{route.params.hide_salary == "1" ? "-": `${route.params.min_salary}-${route.params.max_salary} ${route.params.sal_currancy} ${'\n'} per month`}</Text>
+                </View>
+              </View>
+              <View style={{ flexDirection: 'row', alignSelf:'flex-start',  width:'50%' }}>
+                <View style={{ backgroundColor: COLORS.overseaspurple, height: 10, width: 10, borderRadius: 50, marginTop: 5 }}></View>
+                <View style={{ marginLeft: 5 }}>
+                  <Text style={{ color: COLORS.darkpurple, }}>Location</Text>
+                  <Text style={{ color: COLORS.darkpurple, }}>{route.params.job_location}</Text>
+                </View>
+              </View>
             </View>
-          </View>
+
+            {/* SecondRow */}
+            <View style={{ flexDirection: 'row', justifyContent:'space-between',marginBottom:8 }}>
+              <View style={{ flexDirection: 'row', width:'50%' }}>
+                <View style={{ backgroundColor: COLORS.overseaspurple, height: 10, width: 10, borderRadius: 50, marginTop: 5 }}></View>
+                <View style={{ marginLeft: 5 }}>
+                  <Text style={{ color: COLORS.darkpurple, }}>Over Time</Text>
+                  <Text style={{ color: COLORS.darkpurple, }}>{route.params.overtime == "1" ? "Yes" : "No"}</Text>
+                </View>
+              </View>
+              <View style={{ flexDirection: 'row',  width:'50%'}}>
+                <View style={{ backgroundColor: COLORS.overseaspurple, height: 10, width: 10, borderRadius: 50, marginTop: 5 }}></View>
+                <View style={{ marginLeft: 5 }}>
+                  <Text style={{ color: COLORS.darkpurple, }}>Food</Text>
+                  <Text style={{ color: COLORS.darkpurple, }}>{route.params.food == "1" ? "Yes" : "No"}</Text>
+                </View>
+              </View>
+            </View>
+
+            {/* ThirdRow */}
+            {/* <View style={{ flexDirection: 'row' , }}>
+              <View style={{ flexDirection: 'row',  }}>
+                <View style={{ backgroundColor: COLORS.overseaspurple, height: 10, width: 10, borderRadius: 50, marginTop: 5 }}></View>
+                <View style={{ marginLeft: 5 }}>
+                  <Text style={{ color: COLORS.darkpurple, }}>Experience</Text>
+                  <Text style={{ color: COLORS.darkpurple, }}>{route.params.exp} per month</Text>
+                </View>
+              </View>
+              <View style={{ flexDirection: 'row', marginLeft:50}}>
+                <View style={{ backgroundColor: COLORS.overseaspurple, height: 10, width: 10, borderRadius: 50, marginTop: 5 }}></View>
+                <View style={{ marginLeft: 5 }}>
+                  <Text style={{ color: COLORS.darkpurple, }}>Duty Hour</Text>
+                  <Text style={{ color: COLORS.darkpurple, }}>{route.params.exp}</Text>
+                </View>
+              </View>
+            </View> */}
+            <View style={{ flexDirection: 'row', justifyContent:'space-between' }}>
+              <View style={{ flexDirection: 'row', width:'50%'  }}>
+                <View style={{ backgroundColor: COLORS.overseaspurple, height: 10, width: 10, borderRadius: 50, marginTop: 5 }}></View>
+                <View style={{ marginLeft: 5 }}>
+                <Text style={{ color: COLORS.darkpurple, }}>Experience</Text>
+                  {/* <Text style={{ color: COLORS.darkpurple, }}>{route.params.exp}</Text> */}
+                  <Text style={{ color: COLORS.darkpurple, }}>{route.params.is_min_exp == 1 ? `${route.params.exp}` : "No Exp Require"}</Text>
+                </View>
+              </View>
+              <View style={{ flexDirection: 'row', width:'50%'  }}>
+                <View style={{ backgroundColor: COLORS.overseaspurple, height: 10, width: 10, borderRadius: 50, marginTop: 5 }}></View>
+                <View style={{ marginLeft: 5 }}>
+                <Text style={{ color: COLORS.darkpurple, }}>Duty Hour</Text>
+                  <Text style={{ color: COLORS.darkpurple, }}>{route.params.duty_hour_day} Hrs per day</Text>
+                  <Text style={{ color: COLORS.darkpurple, }}>{route.params.duty_hour_week} days per week</Text>
+                </View>
+              </View>
+            </View>
           <View style={{ borderBottomColor: 'lightgray', borderBottomWidth: 0.5 , marginTop:20}}></View>
         </View>
         <View style={{  marginHorizontal: 20, paddingVertical: 10, paddingHorizontal: 10, borderRadius: 10 }}>
@@ -131,24 +219,27 @@ const JobDetails = ({navigation, route}) => {
         </View>
         <View style={{ marginHorizontal: 20,  paddingVertical: 10, paddingHorizontal: 10, borderRadius: 10 }}>
           <Text style={{ color: COLORS.darkpurple, fontSize: 18, marginBottom: 10 }}>Education</Text>
-          <View style={{ flexDirection: 'row' }}>
-            {/* <View style={{ backgroundColor: COLORS.overseaspurple, height: 10, width: 10, borderRadius: 50, marginTop: 5 }}></View> */}
+          {route.params.education_require.map((i)=> (
+            <View style={{ flexDirection: 'row' }}>
+            <View style={{ backgroundColor: COLORS.overseaspurple, height: 10, width: 10, borderRadius: 50, marginTop: 5 }}></View>
+            <Text style={{ color: COLORS.darkpurple, marginBottom: 20, marginLeft:10 }}>{i}</Text>
+          </View>
+          ))}
+          {/* <View style={{ flexDirection: 'row' }}>
             <Text style={{ color: COLORS.darkpurple, marginBottom: 20, }}>UG:</Text>
             <Text style={{ color: COLORS.darkpurple, marginBottom: 20, marginLeft:10, fontWeight:'bold' }}>B.Tech/B.E - Any Specialization</Text>
           </View>
           <View style={{ flexDirection: 'row' }}>
-            {/* <View style={{ backgroundColor: COLORS.overseaspurple, height: 10, width: 10, borderRadius: 50, marginTop: 5 }}></View> */}
             <Text style={{ color: COLORS.darkpurple, marginBottom: 20,  }}>PG:</Text>
             <Text style={{ color: COLORS.darkpurple, marginBottom: 20, marginLeft:10,fontWeight:'bold'  }}>Any Postgraduate - Any Specialization</Text>
           </View>
           <View style={{ flexDirection: 'row' }}>
-            {/* <View style={{ backgroundColor: COLORS.overseaspurple, height: 10, width: 10, borderRadius: 50, marginTop: 5 }}></View> */}
             <Text style={{ color: COLORS.darkpurple, marginBottom: 20,  }}>Doctorate:</Text>
             <Text style={{ color: COLORS.darkpurple, marginBottom: 20, marginLeft:10,fontWeight:'bold'  }}>Any Postgraduate - Any Specialization</Text>
-          </View>
+          </View> */}
           <View style={{ borderBottomColor: 'lightgray', borderBottomWidth: 0.5 }}></View>
         </View>
-        <View style={{  marginHorizontal: 20, paddingVertical: 10, paddingHorizontal: 10, borderRadius: 10, }}>
+        {/* <View style={{  marginHorizontal: 20, paddingVertical: 10, paddingHorizontal: 10, borderRadius: 10, }}>
           <Text style={{ color: COLORS.darkpurple, fontSize: 18, marginBottom: 10 }}>Interview Location</Text>
           <Text style={{ color: COLORS.darkpurple, fontSize: 18, marginBottom: 10, fontWeight:'bold'}}>Delhi</Text>
           <View style={{flexDirection:'row', justifyContent:'space-between'}}>
@@ -165,7 +256,7 @@ const JobDetails = ({navigation, route}) => {
           </View>
           <Text style={{ color: COLORS.darkpurple, fontSize: 16, marginBottom: 10, fontWeight:'bold' }}>+91 9876543210</Text>
           <View style={{ borderBottomColor: 'lightgray', borderBottomWidth: 0.5 }}></View>
-        </View>
+        </View> */}
       </ScrollView>}
       <Modal isVisible={modalOpen} onBackdropPress={()=>{setModalOpen(false)}}>
         <View style={styles.modelMainBox}>

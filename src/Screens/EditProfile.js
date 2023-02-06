@@ -13,6 +13,8 @@ import DocumentPicker, { types } from 'react-native-document-picker';
 import Modal from "react-native-modal";
 import Textarea from 'react-native-textarea';
 import { BASE_URL } from '../services/Config'
+import { RadioButton } from 'react-native-paper';
+import SelectMultiple from 'react-native-select-multiple'
 
 const EditProfile = ({ navigation, route }) => {
     // alert(JSON.stringify(route.params,null,2))
@@ -37,7 +39,11 @@ const EditProfile = ({ navigation, route }) => {
     const [loading, setLoading] = useState(false)
     const [date, setDate] = useState(route.params.user?.dob)
     const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
-    const [toggleCheckBox, setToggleCheckBox] = useState(false)
+    const [englishBox, setEnglishBox] = useState(false)
+    const [hindiBox, setHindiBox] = useState(false)
+    const [selectedLanguage, setSelectedLanguage] = useState(route.params.user?.languages)
+    const [marital_status, setMarital_status] = useState(route.params.user?.marital_status)
+    const [checked, setChecked] = useState(route.params.user?.marital_status == "Married" ? 0 : 1)
     const data = [
         {
             icon: require('../images/marketing.png'),
@@ -89,6 +95,9 @@ const EditProfile = ({ navigation, route }) => {
         },
     ]
 
+    const marStatus = ["Married", "Single"]
+    const language = ["English","Hindi","Arabic"]
+
     useEffect(()=>{
         getCategory()
     },[])
@@ -97,8 +106,14 @@ const EditProfile = ({ navigation, route }) => {
         setCategoryList(ct.data)
     }
 
+
     const updateProfile = async () => {
         setIsLoading(true)
+        const langs = selectedLanguage.map((i)=>{
+            return i.value
+        })
+        // alert(JSON.stringify(langs[0],null,2))
+        // return
         const body = {
             firstName: name,
             lastName: lname,
@@ -112,7 +127,9 @@ const EditProfile = ({ navigation, route }) => {
             city,
             state,
             address,
-            summary
+            summary,
+            languages:langs[0] == undefined ? selectedLanguage : langs,
+            marital_status
 
         }
         // alert(JSON.stringify(body,null,2))
@@ -122,6 +139,7 @@ const EditProfile = ({ navigation, route }) => {
         if (status) {
             setIsLoading(false)
             alert("Profile Updated")
+            navigation.goBack()
         }
     }
 
@@ -183,6 +201,8 @@ const EditProfile = ({ navigation, route }) => {
         setDate(date)
         hideDatePicker();
       };
+
+
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: '#f5f5f5' }}>
             <StatusBar barStyle="light-content" backgroundColor={COLORS.darkpurple} />
@@ -190,9 +210,9 @@ const EditProfile = ({ navigation, route }) => {
             <ScrollView
                 keyboardShouldPersistTaps='always'>
                 <View style={{ backgroundColor: COLORS.overseaspurple, height: 120 }}></View>
-                <TouchableOpacity  onPress={()=> getPassport()}>
-                    <Image source={profilePic ? {uri : profilePic} : require('../images/profile.png')} style={{ alignSelf: 'center', marginTop: -60, width: 140, height: 140, borderRadius:70 }} />
-                    <Image source={require('../images/edit.png')} style={{height:20, width:20, position:'relative', top:-140, left: 240,}}/>
+                <TouchableOpacity style={{alignSelf: 'center', marginTop: -60, width: 140, height: 140, borderRadius:70 }}  onPress={()=> getPassport()}>
+                    <Image source={profilePic ? {uri : profilePic} : require('../images/profile.png')} style={{ width: 140, height: 140, borderRadius:70 }} />
+                    <Image source={require('../images/edit.png')} style={{height:20, width:20, position:'relative', top:-150, left: 100,}}/>
                 </TouchableOpacity>
 
                 <TextInput
@@ -274,10 +294,12 @@ const EditProfile = ({ navigation, route }) => {
                 </View> */}
                 <View style={{ marginHorizontal: 20, color: COLORS.overseaspurple, borderBottomWidth: 1, paddingBottom: 10, marginTop: 10, justifyContent: 'space-between', }}>
                     <Text style={{ marginHorizontal: 10, color: 'gray', fontSize: 12 }}>SELECT TRADE</Text>
-                    <TouchableOpacity onPress={() => setModalOpen(true)} style={{ flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 10, marginTop: 5 }}>
-                        <Text style={{ color: '#000', fontSize: 18 }}>{trade}</Text>
-                        <Image source={require('../images/dropdown.png')} style={{ width: 24, width: 24, resizeMode: 'contain', alignSelf: 'flex-end' }} />
-                    </TouchableOpacity>
+                    <View 
+                    // onPress={() => setModalOpen(true)} 
+                    style={{ flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 10, marginTop: 5 }}>
+                        <Text style={{ color: '#000', fontSize: 18, color:"gray" }}>{trade}</Text>
+                        {/* <Image source={require('../images/dropdown.png')} style={{ width: 24, width: 24, resizeMode: 'contain', alignSelf: 'flex-end' }} /> */}
+                    </View>
                 </View>
                 <TextInput
                     label="WORK EXPERIENCE (YEARS)"
@@ -370,39 +392,44 @@ const EditProfile = ({ navigation, route }) => {
                     underlineColorAndroid={'transparent'}
                 />
                 </View>
-                {/* <View style={{ marginHorizontal: 20, color: COLORS.overseaspurple, borderBottomWidth: 0.9, paddingBottom: 20, marginTop: 5, justifyContent: 'space-between', }}>
+                <View style={{ marginHorizontal: 20, color: COLORS.overseaspurple, borderBottomWidth: 0.9,  marginTop: 5, justifyContent: 'space-between', }}>
                     <Text style={{ marginHorizontal: 10, color: 'gray', fontSize: 12 }}>LANGUAGE KNOWN </Text>
-                    <View style={{flexDirection:'row', marginTop:5}}>
-                        <View style={{flexDirection:'row', alignItems:'center', marginRight:10}}>
-                        <CheckBox
-                            tintColors={{ true: COLORS.overseaspurple, false: COLORS.overseaspurple }}
-                            onFillColor={COLORS.overseaspurple}
-                            disabled={false}
-                            onAnimationType='fill'
-                            offAnimationType='fade'
-                            boxType='square'
-                            value={toggleCheckBox}
-                            onValueChange={(newValue) =>alert(newValue) }
-                        />
-                        <Text style={{color: COLORS.overseaspurple, fontSize:16}}>English</Text>
-                        </View>
-                        <View style={{flexDirection:'row', alignItems:'center'}}>
-                        <CheckBox
-                            tintColors={{ true: COLORS.overseaspurple, false: COLORS.overseaspurple }}
-                            onFillColor={COLORS.overseaspurple}
-                            disabled={false}
-                            onAnimationType='fill'
-                            offAnimationType='fade'
-                            boxType='square'
-                            value={toggleCheckBox}
-                            onValueChange={(newValue) => alert(newValue)}
-                        />
-                        <Text style={{color: COLORS.overseaspurple, fontSize:16}}>Hindi</Text>
-                        </View>
-                        
-                    </View>
-                </View> */}
-                
+                    <SelectMultiple
+                        items={language}
+                        style={{backgroundColor:'f5f5f5', marginLeft:-10}}
+                        rowStyle={{backgroundColor:'#f5f5f5'}}
+                        selectedCheckboxStyle={{color:COLORS.overseaspurple}}
+                        selectedItems={selectedLanguage}
+                        onSelectionsChange={setSelectedLanguage} />
+
+                </View>
+                <View style={{ marginHorizontal: 20, color: COLORS.overseaspurple, borderBottomWidth: 0.9, paddingBottom: 20, marginTop: 5, justifyContent: 'space-between', }}>
+                    <Text style={{ marginHorizontal: 10, color: 'gray', fontSize: 12 }}>MARITIAL STATUS </Text>
+                    <FlatList
+                        data={marStatus}
+                        horizontal
+                        renderItem={({ item, index }) => (
+                            <TouchableOpacity onPress={() => {
+                                setChecked(index)
+                                setMarital_status(item)
+                            }}>
+                                <View style={{ flexDirection: 'row', alignItems:'center' }}>
+                                    <RadioButton
+                                        value={checked}
+                                        status={checked === index ? 'checked' : 'unchecked'}
+                                        onPress={() => {
+                                            setChecked(index)
+                                            setMarital_status(item)
+                                        }}
+                                        uncheckedColor={COLORS.overseaspurple}
+                                        color={COLORS.overseaspurple}
+                                    />
+                                        <Text style={{ color: '#333333', fontSize: 16 }}>{item}</Text>
+                                </View>
+                            </TouchableOpacity>
+                        )}
+                    />
+                </View>
                 <View style={{ width: '100%', marginBottom: 20, marginTop: 30 }}>
                     <ButtonStyle
                         title={"Update"}

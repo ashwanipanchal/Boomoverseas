@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Image, Dimensions, StatusBar, Platform } from 'react-native'
+import { StyleSheet, Text, View, Image, Dimensions, StatusBar, Platform, Alert } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { LocalStorage } from '../services/Api';
 const { height, width } = Dimensions.get('window');
@@ -11,7 +11,7 @@ import StringsOfLanguages from '../Constant/LanguageStrings'
 //   statusCodes,
 // } from '@react-native-google-signin/google-signin';
 import { _SetAuthToken } from '../services/ApiSauce';
-
+import messaging from '@react-native-firebase/messaging';
 
 const Splash = ({navigation}) => {
   const dispatch = useDispatch()
@@ -21,31 +21,39 @@ const Splash = ({navigation}) => {
 
 
   useEffect(()=>{
-    checkToken();
       navigationHandle()
-    // isSignedIn()
+      requestUserPermission();
   },[])
   
+  useEffect(() => {
+    const unsubscribe = messaging().onMessage(async remoteMessage => {
+      Alert.alert('A new FCM message arrived!', JSON.stringify(remoteMessage));
+    });
 
+    return unsubscribe;
+  }, []);
 
-  // const inAppUpdates = new SpInAppUpdates(
-  //   false // isDebug
-  // );
-  // // curVersion is optional if you don't provide it will automatically take from the app using react-native-device-info
-  // inAppUpdates.checkNeedsUpdate({ curVersion: '0.0.8' }).then((result) => {
-  //   alert(JSON.stringify(result,null,2))
-  //   if (result.shouldUpdate) {
-  //     let updateOptions = {};
-  //     if (Platform.OS === 'android') {
-  //       // android only, on iOS the user will be promped to go to your app store page
-  //       updateOptions = {
-  //         updateType: IAUUpdateKind.FLEXIBLE,
-  //       };
-  //     }
-  //     inAppUpdates.startUpdate(updateOptions); // https://github.com/SudoPlz/sp-react-native-in-app-updates/blob/master/src/types.ts#L78
-  //   }
-  // });
+  async function requestUserPermission() {
+    const authStatus = await messaging().requestPermission();
+    const enabled =
+      authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
+      authStatus === messaging.AuthorizationStatus.PROVISIONAL;
+    if (enabled) {
+      getFcmToken();
+    }
+  }
 
+  const getFcmToken = async () => {
+    try {
+      let fcmToken = await messaging().getToken();
+      if (fcmToken) {
+        await LocalStorage.setFcmToken(fcmToken)
+        console.log('--fcmToken : ', fcmToken);
+      }
+    } catch (error) {
+      console.log(error, '-------------error');
+    }
+  };
   // const isSignedIn = async () => {
   //   const isSignedIn = await GoogleSignin.isSignedIn();
   //   setState({ isLoginScreenPresented: !isSignedIn });

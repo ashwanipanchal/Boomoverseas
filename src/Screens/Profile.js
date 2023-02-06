@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, SafeAreaView, StatusBar, ScrollView, Image, ActivityIndicator, TouchableOpacity, TextInput, Button } from 'react-native'
+import { StyleSheet, Text, View, SafeAreaView, StatusBar, ScrollView, Image, ActivityIndicator, TouchableOpacity, TextInput, Button,  } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import HomeHeader from '../Components/HomeHeader'
 import { COLORS } from '../Constant/Colors'
@@ -6,30 +6,24 @@ import { Api, LocalStorage } from '../services/Api'
 import { useIsFocused } from '@react-navigation/native'
 import { BASE_URL } from '../services/Config'
 import Toast from 'react-native-simple-toast';
+import Modal from "react-native-modal";
+import HTML from 'react-native-render-html';
+import { WebView } from 'react-native-webview';
 
 const Profile = ({navigation, route}) => {
   const focus = useIsFocused()
   const [loading, setLoading] = useState(false)
   const [summeryText, setSummeryText] = useState(false)
   // const [summeryTextValue, setSummeryTextValue] = useState("")
+  const [modalOpen, setModalOpen] = useState(false);
   const [user, setUser] = useState()
   useEffect(()=>{
-    // alert(JSON.stringify(summeryText,null,2))
     getProfile()
   },[focus])
+
   const getProfile = async() => {
     setLoading(true)
-
-    const jj = (await LocalStorage.getUserDetail() || "")
-    const user2 = JSON.parse(jj)
-    // console.log(user2)
-    // return
-    const body = {
-      "number" : user2.number
-    }
-
-    const user = await Api.getProfile(body)
-    // alert(JSON.stringify(user,null,2))
+    const user = await Api.getProfile()
     setUser(user)
     setLoading(false)
   }
@@ -107,14 +101,37 @@ const Profile = ({navigation, route}) => {
         <View style={{ backgroundColor: '#FFF', marginHorizontal: 20, marginTop: 40, marginBottom:20, paddingVertical: 20, paddingHorizontal: 10, borderRadius: 10, elevation:5  }}>
           <Text style={{ color: COLORS.darkpurple, fontSize: 18, marginBottom: 10 }}>Attached Resume</Text>
           <View style={{ borderBottomColor: 'lightgray', borderBottomWidth: 1 }}></View>
-          <Text style={{ color: COLORS.darkpurple, marginTop: 14 }}>{user?.user.resume?.name}</Text>
+          <TouchableOpacity onPress={()=>user?.user.resume?.name ? navigation.navigate("WebViewScreenForDocuments", {url: user?.user.resume?.name}):null}>
+            <Text style={{ color: COLORS.darkpurple, marginTop: 14 }}>{user?.user.resume?.name}</Text>
+          </TouchableOpacity>
         </View>
         )}
       </ScrollView>}
+      <Modal isVisible={modalOpen} onBackdropPress={()=>{setModalOpen(false)}}>
+        <View style={styles.modelMainBox}>
+          <Text>Hello</Text>
+          <WebView style = {{flex:1}} source={{ uri: 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b6/Image_created_with_a_mobile_phone.png/640px-Image_created_with_a_mobile_phone.png'}}  />
+        </View>
+      </Modal>
       </SafeAreaView>
   )
 }
 
 export default Profile
 
-const styles = StyleSheet.create({})
+const styles = StyleSheet.create({
+  modelMainBox: {
+    backgroundColor: '#FFFFFF',
+    marginHorizontal: 20,
+    borderRadius: 10,
+},
+text: {
+    fontFamily: 'Muli-Bold',
+    fontWeight: 'bold',
+    fontSize: 18,
+    color: '#333333',
+    textAlign: 'center',
+    marginTop: 20,
+    lineHeight: 25,
+},
+})

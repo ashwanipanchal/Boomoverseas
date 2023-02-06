@@ -1,20 +1,36 @@
-import { SafeAreaView, StatusBar, StyleSheet, Text, View, FlatList, Image, TouchableOpacity } from 'react-native'
+import { SafeAreaView, StatusBar, StyleSheet, Text, View, FlatList, Image, TouchableOpacity, ActivityIndicator } from 'react-native'
 import React, {useState, useEffect} from 'react'
 import HeaderTop from '../Components/HeaderTop'
 import { COLORS } from '../Constant/Colors'
 import { Api, LocalStorage } from '../services/Api'
 import { useIsFocused } from '@react-navigation/native';
 import Modal from "react-native-modal";
+import { BASE_URL } from '../services/Config'
+import moment from 'moment'
 
 const RecommendedJobs = ({navigation}) => {
   const focus = useIsFocused()
     const [list, setList] = useState([])
     const [jobToApply, setJobToApply] = useState();
+    const [user, setUser] = useState();
     const [modalOpen, setModalOpen] = useState(false);
     const [jobApplyLoader, setJobApplyLoader] = useState(false);
     useEffect(()=>{
+      getProfile()
         getNews()
-    },[focus])
+    },[focus == true])
+
+    const getProfile = async() => {
+      const jj = (await LocalStorage.getUserDetail() || "")
+      const user2 = JSON.parse(jj)
+  
+      const body = {
+        "number" : user2.number
+      }
+      const user = await Api.getProfile(body)
+      // alert(JSON.stringify(user,null,2))
+      setUser(user)
+    }
 
     const getNews = async()=>{
         const res = await Api.getJobs()
@@ -26,10 +42,10 @@ const RecommendedJobs = ({navigation}) => {
     }
 
     const job_apply = async (item) => {
-      const value = (await LocalStorage.getUserDetail() || '')
-      const user = JSON.parse(value)
+
       // alert(JSON.stringify(user,null,2))
-      if(user.activeJobs == "0"){
+      // return
+      if(user.user.activeJobs <= "0"){
         alert("You have to buy our membership to apply")
       }else{
         if (item.job_status == 1) {
@@ -37,7 +53,7 @@ const RecommendedJobs = ({navigation}) => {
         } else {
           setJobApplyLoader(true)
           const body = {
-            user_id: user._id,
+            user_id: user.user._id,
             job_id: item._id
           }
   
@@ -58,37 +74,40 @@ const RecommendedJobs = ({navigation}) => {
           renderItem={({ item }) => (
             <TouchableOpacity activeOpacity={0.9} onPress={()=>navigation.navigate("JobDetails", item)} style={{ backgroundColor: '#FFF', marginHorizontal: 16, marginVertical: 10, paddingTop: 10,  borderTopLeftRadius: 10, borderTopRightRadius: 10, borderBottomRightRadius: 10, borderBottomLeftRadius: 10, elevation:5 }}>
               <View style={{ flexDirection: 'row', justifyContent: 'space-between',paddingHorizontal: 10, }}>
-                <Image source={require('../images/jobicon.png')} style={{ marginRight: 10, resizeMode: 'contain', width: 52, height: 52 }} />
+                <Image source={{uri : `${BASE_URL}${item?.company_name?.company_image?.name}`}} style={{ marginRight: 10, resizeMode: 'contain', width: 52, height: 52 }} />
                 <View style={{ flex: 1 }}>
                   <Text style={{ color: COLORS.darkpurple, fontSize: 16, fontWeight: '700' }}>{item.title}</Text>
-                  <Text style={{ color: 'green', fontSize: 16 }}>{item.industry}</Text>
+                  <Text style={{ color: 'green', fontSize: 16 }}>{item.show_company_name == "1" ? item.company_name?.company_name: ""}</Text>
                   <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginRight: 5 }}>
-                    <Text style={{ color: COLORS.darkpurple, fontSize: 12, color: 'gray' }}>{item.id}</Text>
-                    <Text style={{ color: COLORS.darkpurple, fontSize: 12, color: 'gray' }}>{item.postDate}</Text>
+                    <Text style={{ color: COLORS.darkpurple, fontSize: 12, color: 'gray' }}>Job ID: {item.new_job_id}</Text>
+                    <Text style={{ color: COLORS.darkpurple, fontSize: 12, color: 'gray' }}>Posted On {moment(item.job_post_date).format("MMM DD, YYYY")}</Text>
                   </View>
                 </View>
-                <Image source={item.favIcon} style={{ marginRight: 10, resizeMode: 'contain', width: 24, height: 24 }} />
+                {/* {likeLoading ? <ActivityIndicator size={'small'}/> : */}
+                {/* <TouchableOpacity onPress={() => saveJobs(item)}>
+                  <Image source={item.saved == "0" ? require('../images/fav1.png') :  require('../images/fav.png')} style={{ marginRight: 10, resizeMode: 'contain', width: 24, height: 24 }} />
+                </TouchableOpacity> */}
               </View>
-              <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 20, alignItems:'center',paddingHorizontal: 10, marginLeft:10}}>
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 20, alignItems:'center',paddingHorizontal: 10, marginLeft:10 }}>
                 <View style={{ alignItems: 'center', flexDirection: 'row', width:'33%' }}>
                   <Image source={require('../images/basicsalary.png')} style={{ width: 24, height: 24, resizeMode: 'contain', marginRight: 10 }} />
                   <View>
                     <Text style={{ color: 'gray', fontSize: 12 }}>Basic Salary</Text>
-                    <Text style={{ color: 'gray' }}>{item.salary} AED</Text>
+                    <Text style={{ color: 'gray' }}>{item.hide_salary == "1" ? "-": `${item.min_salary}-${item.max_salary}${'\n'} ${item.sal_currancy}`}</Text>
                   </View>
                 </View>
                 <View style={{ alignItems: 'center', flexDirection: 'row', width:'33%' }}>
                   <Image source={require('../images/dailyhour.png')} style={{ width: 24, height: 24, resizeMode: 'contain', marginRight: 10 }} />
                   <View>
                     <Text style={{ color: 'gray', fontSize: 12 }}>Duty Hours</Text>
-                    <Text style={{ color: 'gray' }}>10 Hours</Text>
+                    <Text style={{ color: 'gray' }}>{item.duty_hour_day} Hours</Text>
                   </View>
                 </View>
                 <View style={{ alignItems: 'center', flexDirection: 'row', width:'33%' }}>
                   <Image source={require('../images/overtime.png')} style={{ width: 24, height: 24, resizeMode: 'contain', marginRight: 10 }} />
                   <View>
                     <Text style={{ color: 'gray', fontSize: 12 }}>Overtime</Text>
-                    <Text style={{ color: 'gray' }}>2 Hours</Text>
+                    <Text style={{ color: 'gray' }}>{item.overtime == "1"? "Yes" : "No"}</Text>
                   </View>
                 </View>
               </View>
@@ -97,14 +116,14 @@ const RecommendedJobs = ({navigation}) => {
                   <Image source={require('../images/food.png')} style={{ width: 24, height: 24, resizeMode: 'contain', marginRight: 10 }} />
                   <View>
                     <Text style={{ color: 'gray', fontSize: 12 }}>Food</Text>
-                    <Text style={{ color: 'gray' }}>Yes</Text>
+                    <Text style={{ color: 'gray' }}>{item.food == "1" ? "Yes": "No"}</Text>
                   </View>
                 </View>
                 <View style={{ alignItems: 'center', flexDirection: 'row', width:'33%' }}>
                   <Image source={require('../images/experience.png')} style={{ width: 24, height: 24, resizeMode: 'contain', marginRight: 10 }} />
                   <View>
                     <Text style={{ color: 'gray', fontSize: 12 }}>Experience</Text>
-                    <Text style={{ color: 'gray' }}>{item.exp} Years</Text>
+                    <Text style={{ color: 'gray' }}>{item.is_min_exp == 1 ? `${item.exp}` : "-"}</Text>
                   </View>
                 </View>
                 <View style={{ alignItems: 'center', flexDirection: 'row', width:'33%' }}>
@@ -115,15 +134,20 @@ const RecommendedJobs = ({navigation}) => {
                   </View>
                 </View>
               </View>
-              <TouchableOpacity onPress={()=>{
-                 if (item.job_status == 1) {
+              {/* <TouchableOpacity onPress={()=>job_apply(item)} style={{ backgroundColor: item.job_status == 1 ? 'green' : COLORS.overseaspurple, justifyContent: 'center', alignItems: 'center', height: 42, marginTop: 16, borderBottomRightRadius:10, borderBottomLeftRadius:10, elevation:5 }}>
+                {jobApplyLoader ? <ActivityIndicator size={'small'}/> :
+                <Text style={{ color: '#fff', fontSize: 18 }}>{item.job_status == 1 ? 'APPLIED' : 'APPLY'}</Text>}
+              </TouchableOpacity> */}
+              <TouchableOpacity activeOpacity={0.8} onPress={()=>{
+                if (item.job_status == 1) {
                   // alert("You cannot apply again to this job")
                 } else {
                   setModalOpen(true)
                   setJobToApply(item)
                 }
-              }} style={{backgroundColor: item.job_status == 1 ? 'green' : COLORS.overseaspurple, justifyContent: 'center', alignItems: 'center', height: 42, marginTop: 16, borderBottomRightRadius:10, borderBottomLeftRadius:10, elevation:5 }}>
-              <Text style={{ color: '#fff', fontSize: 18 }}>{item.job_status == 1 ? 'APPLIED' : 'APPLY'}</Text>
+                }} style={{ backgroundColor: item.job_status == 1 ? 'green' : COLORS.overseaspurple, justifyContent: 'center', alignItems: 'center', height: 42, marginTop: 16, borderBottomRightRadius:10, borderBottomLeftRadius:10, elevation:5 }}>
+                {jobApplyLoader ? <ActivityIndicator size={'small'}/> :
+                <Text style={{ color: '#fff', fontSize: 18 }}>{item.job_status == 1 ? 'APPLIED' : 'APPLY'}</Text>}
               </TouchableOpacity>
             </TouchableOpacity>
           )}

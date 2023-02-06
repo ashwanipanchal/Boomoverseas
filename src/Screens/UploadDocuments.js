@@ -23,11 +23,11 @@ const UploadDocuments = ({navigation, route}) => {
   },[])
 
   const getProfileDocs = async() => {
-    setLoading(true)
+    // setLoading(true)
     const response = await Api.getProfile()
     // alert(JSON)
     setUserData(response.user)
-    setLoading(false)
+    // setLoading(false)
   }
 
   const getPassport = async(item) => {
@@ -55,33 +55,53 @@ const UploadDocuments = ({navigation, route}) => {
   }
 
   const submitDocs = async() => {
-    // alert(JSON.stringify("submitted",null,2))
-    var formData = new FormData()
-    if ("uri" in passport1Full) {
-      formData.append('passportImageF', {
-        uri: passport1Full.uri,
-        type: passport1Full.type,
-        name: passport1Full.name,
-      })
-    }
-    if ("uri" in passport2Full) {
-      formData.append('passportImageB', {
-        uri: passport2Full.uri,
-        type: passport2Full.type,
-        name: passport2Full.name,
-      })
-    }
-    if ("uri" in resumeFull) {
-      formData.append('resume', {
-        uri: resumeFull.uri,
-        type: resumeFull.type,
-        name: resumeFull.name,
-      })
-    }
-    // alert(JSON.stringify(formData,null,2))
+    // alert(JSON.stringify(resumeFull,null,2))
     // return
-    const response = await Api.uploadDocs(formData)
-    alert(JSON.stringify(response.message,null,2))
+    var formData = new FormData()
+    if(passport1Full){
+      if ("uri" in passport1Full) {
+        console.log("inside passport1 if")
+        formData.append('passportImageF', {
+          uri: passport1Full.uri,
+          type: passport1Full.type,
+          name: passport1Full.name,
+        })
+      }
+    }
+
+    if(passport2Full){
+      if ("uri" in passport2Full) {
+        console.log("inside passport2 if")
+        formData.append('passportImageB', {
+          uri: passport2Full.uri,
+          type: passport2Full.type,
+          name: passport2Full.name,
+        })
+      }
+    }
+
+
+    if(resumeFull){
+      if ("uri" in resumeFull) {
+        console.log("inside resume if")
+        formData.append('resume', {
+          uri: resumeFull.uri,
+          type: resumeFull.type,
+          name: resumeFull.name,
+        })
+      }
+    }
+    
+    if(formData._parts.length > 0){
+      setLoading(true)
+      const response = await Api.uploadDocs(formData)
+      setLoading(false)
+      alert(JSON.stringify(response.message,null,2))
+      navigation.goBack()
+    }else{
+      navigation.goBack()
+    }
+    
   }
 
   return (
@@ -105,9 +125,19 @@ const UploadDocuments = ({navigation, route}) => {
         <View style={{marginLeft:20, marginTop:20}}>
         <Text style={{color:COLORS.overseaspurple,fontSize:16}}>UPLOAD RESUME</Text>
         <View style={{flexDirection:'row', marginTop:10, marginBottom:10}}>
-        <TouchableOpacity onPress={()=>getPassport("3")} style={{flexDirection:'row', marginTop:10, marginBottom:10}}>
+        {/* <TouchableOpacity onPress={()=>getPassport("3")} style={{flexDirection:'row', marginTop:10, marginBottom:10}}>
           <Image style={{height:100, width:100}} source={resume.length > "0" ? {uri : `${resume}`} :require('../images/uploaddoc.png')}/>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
+            {resume.length > "0" ? 
+            <TouchableOpacity onPress={() => getPassport("3")} style={{ flexDirection: 'row', marginTop: 10, marginBottom: 10 }}>
+              <Image style={{ height: 100, width: 100, resizeMode:'contain' }} source={resume.match(/\.(jpg|jpeg|png|gif)$/i) ? { uri: `${resume}` }: require('../images/pdf.png')} />
+            </TouchableOpacity> :
+              <TouchableOpacity onPress={() => getPassport("3")} style={{ flexDirection: 'row', marginTop: 10, marginBottom: 10 }}>
+                <Image style={{ height: 100, width: 100 }} source={require('../images/uploaddoc.png')} />
+              </TouchableOpacity>
+            }
+
+        
         </View>
       </View>
       {/* <View style={{borderBottomWidth:1, borderBottomColor:'lightgray',marginTop:10}}></View>
@@ -137,7 +167,7 @@ const UploadDocuments = ({navigation, route}) => {
                   title={'Submit'}
                   height={52}
                   bgColor={'#261750'}
-                  // loader={state.isLoading}
+                  loader={loading}
                   onPress={() => {
                       // navigation.navigate('JobOption');
                     submitDocs()

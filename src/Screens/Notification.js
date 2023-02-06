@@ -51,7 +51,7 @@ const Notification = ({navigation}) => {
     <SafeAreaView style={{ flex: 1, backgroundColor: '#f5f5f5' }}>
     <StatusBar barStyle="light-content" backgroundColor={COLORS.darkpurple} />
     <HeaderTop back={() => navigation.goBack()} title={StringsOfLanguages.notification} />
-    <FlatList
+    {/* <FlatList
       data={data}
       renderItem={({item})=> (
           <View style={{flexDirection:'row', backgroundColor:'#FFF', alignItems:'center', marginTop:15, marginHorizontal:15, paddingVertical:10, paddingHorizontal:18, borderRadius:10, elevation:2, marginBottom:2}}>
@@ -63,7 +63,10 @@ const Notification = ({navigation}) => {
               </View>
           </View>
       )}
-    />
+    /> */}
+    <View style={{justifyContent:'center', alignItems:'center', flex:1}}>
+        <Text style={{color:COLORS.overseaspurple, fontSize:16}}>No Notification</Text>
+    </View>
 </SafeAreaView>
   )
 }

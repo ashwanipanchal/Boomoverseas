@@ -35,6 +35,13 @@ import Documents from '../Screens/Documents';
 import ActivePackage from '../Screens/ActivePackage';
 import SearchResult from '../Screens/SearchResult';
 import WebViewScreen from '../Screens/WebViewScreen';
+import ForgotPassword from '../Screens/ForgotPassword';
+import OTPForgot from '../Screens/OTPForgot';
+import CreatePassword from '../Screens/CreatePassword';
+import Gallery from '../Screens/Gallery';
+import Filter from '../Screens/Filter';
+import NoInternetScreen from '../Screens/NoInternetScreen';
+import WebViewScreenForDocuments from '../Screens/WebViewScreenForDocuments';
 
 
 
@@ -61,6 +68,11 @@ const StackNavigator = () => {
                 <Stack.Screen
                     name="Splash"
                     component={Splash}
+                    options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                    name="NoInternetScreen"
+                    component={NoInternetScreen}
                     options={{ headerShown: false }}
                 />
                 <Stack.Screen
@@ -111,6 +123,11 @@ const StackNavigator = () => {
                 <Stack.Screen
                     name="Industry"
                     component={Industry}
+                    options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                    name="Filter"
+                    component={Filter}
                     options={{ headerShown: false }}
                 />
                 <Stack.Screen
@@ -204,6 +221,11 @@ const StackNavigator = () => {
                     options={{ headerShown: false }}
                 />
                 <Stack.Screen
+                    name="Gallery"
+                    component={Gallery}
+                    options={{ headerShown: false }}
+                />
+                <Stack.Screen
                     name="ActivePackage"
                     component={ActivePackage}
                     options={{ headerShown: false }}
@@ -211,6 +233,26 @@ const StackNavigator = () => {
                 <Stack.Screen
                     name="WebViewScreen"
                     component={WebViewScreen}
+                    options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                    name="WebViewScreenForDocuments"
+                    component={WebViewScreenForDocuments}
+                    options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                    name="ForgotPassword"
+                    component={ForgotPassword}
+                    options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                    name="OTPForgot"
+                    component={OTPForgot}
+                    options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                    name="CreatePassword"
+                    component={CreatePassword}
                     options={{ headerShown: false }}
                 />
             </Stack.Navigator>

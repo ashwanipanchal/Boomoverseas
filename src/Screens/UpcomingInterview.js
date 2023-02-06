@@ -88,7 +88,7 @@ const UpcomingInterview = ({navigation}) => {
     <SafeAreaView style={{ flex: 1, backgroundColor: '#f5f5f5' }}>
     <StatusBar barStyle="light-content" backgroundColor={COLORS.darkpurple} />
     <HomeHeader leftIcon={require('../images/arrow.png')} menuOption={() => navigation.goBack()} title={StringsOfLanguages.upcominginterview} secondRightIcon={require('../images/searchwhite.png')} rightOption={() => navigation.navigate('Search')} />
-    <FlatList
+    {/* <FlatList
           data={jobs}
           renderItem={({ item }) => (
             <TouchableOpacity activeOpacity={0.9}  style={{ backgroundColor: '#FFF', marginHorizontal: 16, marginVertical: 10, paddingTop: 10, paddingHorizontal: 10, borderRadius: 10 }}>
@@ -140,7 +140,10 @@ const UpcomingInterview = ({navigation}) => {
               </View>
             </TouchableOpacity>
           )}
-        />
+        /> */}
+        <View style={{flex:1, alignItems:'center', justifyContent:'center', }}>
+          <Text style={{color:COLORS.overseaspurple}}>No Upcoming Interviews</Text>
+        </View>
     </SafeAreaView>
   )
 }

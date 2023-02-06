@@ -6,13 +6,11 @@ import HeaderTop from '../Components/HeaderTop'
 import { ButtonStyle } from '../Custom/CustomView'
 import Toast from 'react-native-simple-toast'
 import { BASE_URL } from '../services/Config'
-import { LocalStorage } from '../services/Api'
-import { _SetAuthToken } from '../services/ApiSauce'
 
-const OTP = ({navigation, route}) => {
+const OTPForgot = ({navigation, route}) => {
   // alert(JSON.stringify(route.params,null,2))
     const [otp, setOtp] = useState('');
-
+    const [veriryOtp, setVeriryOtp] = useState(route.params?.otp);
   const verifyotpHandler = async()=> {
     if(!otp){
       Toast.show('Please enter your OTP')
@@ -22,36 +20,13 @@ const OTP = ({navigation, route}) => {
       Toast.show('Please enter full OTP')
       return
     }
-    const response = await fetch(`${BASE_URL}verify-otp`, {
-      method: 'POST',
-      headers: {
-        "Accept": "application/json",
-        'Content-Type': 'application/json',
-      },
-      body:JSON.stringify({
-        number:route.params.number,
-        otp:otp,
-      })
-    })
-    const jsonres = await response.json()
-    // alert(JSON.stringify(jsonres))
-    // return
-    const {status, user, token, message} = jsonres
-    if(status){
-      Toast.show(jsonres.message)
-      navigation.replace('Login')
-      // Toast.show(message)
-      // LocalStorage.setUserDetail(JSON.stringify(user));
-      // LocalStorage.setToken(token);
-      // // getFcmToken()
-      // _SetAuthToken(token);
-      // navigation.reset({
-      //   index: 0,
-      //   routes: [{ name: 'DrawerNavigator' }]
-      // })
-    }else{
-      Toast.show(jsonres.message)
+    if (otp != veriryOtp) {
+      Toast.show('Please enter valid OTP');
+      return;
     }
+
+    navigation.replace('CreatePassword', route.params?.number)
+
   }
   return (
       <SafeAreaView style={{ flex: 1, backgroundColor: '#FFF' }}>
@@ -88,7 +63,7 @@ const OTP = ({navigation, route}) => {
   )
 }
 
-export default OTP
+export default OTPForgot
 
 const styles = StyleSheet.create({
     otpInput: {

@@ -1,4 +1,4 @@
-import { SafeAreaView, StyleSheet, Text, View, Image, FlatList, TouchableOpacity,  Alert, Share, } from 'react-native'
+import { SafeAreaView, StyleSheet, Text, View, Image, FlatList, TouchableOpacity,  Alert, Share, ActivityIndicator} from 'react-native'
 import React,{useEffect, useState} from 'react'
 import { COLORS } from '../Constant/Colors';
 import { DrawerContentScrollView } from '@react-navigation/drawer';
@@ -12,6 +12,9 @@ import { Api, LocalStorage } from '../services/Api';
 import { _RemoveAuthToken } from '../services/ApiSauce';
 import { useIsFocused } from '@react-navigation/native'
 import { BASE_URL } from '../services/Config';
+import InAppReview from 'react-native-in-app-review';
+import NetInfo, {useNetInfo} from "@react-native-community/netinfo";
+import NoInternetScreen from './NoInternetScreen';
 
 const CustomDrawer = ({navigation}) => {
   const focus = useIsFocused()
@@ -21,8 +24,21 @@ const CustomDrawer = ({navigation}) => {
   useEffect(()=>{
     // GoogleSignin.configure();
     // getGoogleUser()
-    getProfile()
-  },[focus])
+    const unsubscribe = NetInfo.addEventListener(state => {
+      // alert(JSON.stringify(state,null,2))
+      if(!state.isConnected){
+        return(
+          <NoInternetScreen/>
+        )
+      }else{
+        getProfile()
+      }
+    });
+    return (
+      () => unsubscribe()
+    )
+
+  },[focus == true])
   // const getGoogleUser = async() => {
   //   const user = await GoogleSignin.getCurrentUser()
   //   setUser1(user)
@@ -35,14 +51,7 @@ const CustomDrawer = ({navigation}) => {
 
   const getProfile = async() => {
     setLoading(true)
-    const jj = (await LocalStorage.getUserDetail() || "")
-    const user2 = JSON.parse(jj)
-    // console.log(user2)
-    // return
-    const body = {
-      "number" : user2.number
-    }
-    const user = await Api.getProfile(body)
+    const user = await Api.getProfile()
     // alert(JSON.stringify(user,null,2))
     // console.log(user)
     setUser1(user)
@@ -53,6 +62,12 @@ const CustomDrawer = ({navigation}) => {
           id: 0,
           title: StringsOfLanguages.home,
           value: 'Home',
+          source: require('../images/menu/home.png'),
+        },
+        {
+          id: 0,
+          title: "My Profile",
+          value: 'MyProfile',
           source: require('../images/menu/home.png'),
         },
         {
@@ -172,12 +187,26 @@ const CustomDrawer = ({navigation}) => {
         },
     ]
 
+  const review = async() => {
+    
+    try {
+    InAppReview.isAvailable();
+          // trigger UI InAppreview
+    const app = await InAppReview.RequestInAppReview()
+    alert(JSON.stringify(app,null,2))
+    } catch (error) {
+      alert(JSON.stringify(error,null,2))
+    }
+
+
+
+  }
     const onShare = async () => {
       try {
         const result = await Share.share({
           title: 'App link',
-          message: 'Please install this app and stay safe , AppLink :https://play.google.com/store/apps/details?id=nic.goi.aarogyasetu&hl=en',
-          url: 'https://play.google.com/store/apps/details?id=nic.goi.aarogyasetu&hl=en'
+          message: 'Please install this app and stay safe. https://play.google.com/store/apps/details?id=com.boomoverseas1',
+          url: 'https://play.google.com/store/apps/details?id=com.boomoverseas1'
         });
         if (result.action === Share.sharedAction) {
           if (result.activityType) {
@@ -203,6 +232,9 @@ const CustomDrawer = ({navigation}) => {
             navigation.closeDrawer();
             break;
 
+            case 'MyProfile':
+            navigation.navigate('Profile')
+            break;
             case 'RecommenderJobs':
             navigation.navigate('RecommendedJobs')
             break;
@@ -227,6 +259,9 @@ const CustomDrawer = ({navigation}) => {
           case 'SavedJobs':
             navigation.navigate('SavedJobs')
             break;
+          // case 'Videos':
+          //   navigation.navigate('Filter')
+          //   break;
 
           case 'UpcomingInterview':
             navigation.navigate('UpcomingInterview')
@@ -236,6 +271,14 @@ const CustomDrawer = ({navigation}) => {
             // alert('TradeCenter')
             navigation.navigate('TradeCenterList')
             break;
+          case 'Gallery':
+            // alert('TradeCenter')
+            navigation.navigate('Gallery',{name:"Ashwani"})
+            break;
+          // case 'RateApp':
+          //   // alert('TradeCenter')
+          //   review()
+          //   break;
 
           case 'Subscription':
             // alert('TradeCenter')
@@ -302,15 +345,19 @@ const CustomDrawer = ({navigation}) => {
       }
 
       const onLogoutHandler = () => {
-        _RemoveAuthToken();
-        LocalStorage.setToken('');
-        // dispatch(actions.SetLogout());
-        LocalStorage.clear()
-        navigation.closeDrawer,
-          navigation.reset({
-            index: 0,
-            routes: [{ name: 'Login' }],
-          });
+        navigation.reset({
+          index: 0,
+          routes: [{ name: 'Login' }],
+        });
+        setTimeout(()=>{
+          _RemoveAuthToken();
+          LocalStorage.setToken('');
+          // dispatch(actions.SetLogout());
+          LocalStorage.clear()
+         // navigation.closeDrawer,
+        },2000)
+
+          
       };
 
   const signOut = async () => {

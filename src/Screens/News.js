@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, SafeAreaView, StatusBar, FlatList, TouchableOpacity} from 'react-native'
+import { StyleSheet, Text, View, SafeAreaView, StatusBar, FlatList, TouchableOpacity, TextInput, ScrollView} from 'react-native'
 import React,{useState, useEffect} from 'react'
 import HeaderTop from '../Components/HeaderTop'
 import { COLORS } from '../Constant/Colors'
@@ -79,6 +79,17 @@ const News = ({navigation}) => {
               )}
           />
       </SafeAreaView>
+    // <View style={{flex:1, justifyContent:'space-between'}}>
+    //     <ScrollView>
+    //     <Text>Hello</Text>
+    //     <TextInput style={{backgroundColor:'red'}}/>
+    //     </ScrollView>
+    //     <View style={{position:'absolute', bottom:0}}>
+
+    //         <Text>Hello</Text>
+    //     </View>
+
+    // </View>
   )
 }
 

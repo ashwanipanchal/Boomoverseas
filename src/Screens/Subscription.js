@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, FlatList, StatusBar, Image } from 'react-native'
+import { StyleSheet, Text, View, FlatList, StatusBar, Image, TouchableOpacity } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import LinearGradient from 'react-native-linear-gradient';
 import { RadioButton } from 'react-native-paper';
@@ -126,66 +126,7 @@ const Subscription = ({ navigation, route }) => {
         // handle failure
         alert('Payment Failed')
         // alert(`Error: ${error.code} | ${error.description}`);
-      });
-    
-    //  else {
-    //   if (leads < item.min_lead) {
-    //     alert(`Minimum ${item.min_lead} leads require`)
-    //   } else {
-
-    //     const body = {
-    //       "amount": `${leads * item.price_per_lead}00`,
-    //       "currency": "INR",
-    //       "receipt": "Receipt no. 1",
-    //       "notes": {
-    //         "notes_key_1": "Nick",
-    //         "notes_key_2": "Nick"
-    //       }
-    //     }
-
-
-    //     const res = await fetch('https://api.razorpay.com/v1/orders', {
-    //       method: 'POST',
-    //       headers: {
-    //         "Content-Type": "application/json",
-    //         'Authorization': 'Basic ' + btoa('rzp_test_scykYirAHJJw4T' + ":" + 'LABt2nLITbpvQ8Uhw8GM1y7C'),
-    //       },
-
-    //       body: JSON.stringify(body)
-    //     })
-    //     const response = await res.json()
-    //     console.log(response.id)
-
-    //     var options = {
-    //       description: 'BoomOverSeas',
-    //       image: 'http://www.boomoverseas.com/img/logo.png',
-    //       currency: 'INR',
-    //       key: 'rzp_test_scykYirAHJJw4T',
-    //       amount: `${leads * item.price_per_lead}00`,
-    //       name: 'BoomOverSeas',
-    //       order_id: response.id,//Replace this with an order_id created using Orders API.
-    //       prefill: {
-    //         email: newUser.email,
-    //         contact: `+91${newUser.contact_number}`,
-    //         name: newUser.name
-    //       },
-    //       theme: { color: '#53a20e' }
-    //     }
-    //     RazorpayCheckout.open(options).then((data) => {
-    //       // handle success
-    //       // alert(JSON.stringify(data,null,2));
-    //       // alert('Payment Done')
-    //       console.log(data)
-    //       if (data.razorpay_payment_id) {
-    //         creditPlan(data, item)
-    //       }
-    //     }).catch((error) => {
-    //       // handle failure
-    //       alert('Payment Failed')
-    //       // alert(`Error: ${error.code} | ${error.description}`);
-    //     });
-    //   }
-    // }
+      })
   }
 
 
@@ -198,7 +139,10 @@ const Subscription = ({ navigation, route }) => {
       <FlatList
         data={plans}
         renderItem={({item, index})=>(
-          <View style={{ height: 75, backgroundColor: '#fff', width: 340, alignSelf: 'center', borderRadius: 8, marginTop: 26,marginBottom:5, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal:19, elevation:3 }}>
+          <TouchableOpacity onPress={()=>{
+            setChecked(index)
+            setSelectedPlan(item)
+          }} style={{ height: 75, backgroundColor: '#fff', width: 340, alignSelf: 'center', borderRadius: 8, marginTop: 26,marginBottom:5, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal:19, elevation:3 }}>
         <View style={{flexDirection:'row'}}>
           <RadioButton
             value={checked}
@@ -219,7 +163,7 @@ const Subscription = ({ navigation, route }) => {
           </View>
         </View>
         <Text style={{color:'#333333', fontWeight:'900', fontSize:22}}>₹{item.price}/-</Text>
-      </View>
+      </TouchableOpacity>
         )}
       />
 

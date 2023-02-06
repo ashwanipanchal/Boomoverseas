@@ -67,7 +67,7 @@ const Media = ({navigation}) => {
             style={{flex:1}}
             renderItem={({item})=> (
                 <View style={{flexDirection:'row', backgroundColor:'#FFF', marginTop:10, marginHorizontal:20, paddingVertical:18, paddingHorizontal:18, borderRadius:10, elevation:7, marginBottom:2}}>
-                    <Image source={require('../images/video.png')} style={{width:140, height:140, }}/>
+                    <Image source={require('../images/video.png')} style={{width:100, height:100, marginRight:20}}/>
                     {/* <Thumbnail url={item.link} imageWidth= {100} imageHeight={100} showPlayIcon={true} /> */}
                     <View style={{width:'60%', marginLeft:10}}>
                         <Text style={{ color: COLORS.darkpurple, fontSize:20 }}>{item.title}</Text>

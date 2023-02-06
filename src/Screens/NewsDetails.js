@@ -20,10 +20,10 @@ const NewsDetails = ({navigation}) => {
         <Image source={require('../images/banner.png')} style={{width:'100%', height:175, resizeMode:'contain'}}/>
         <Text style={{ color: COLORS.darkpurple, fontSize: 16,  marginTop:5 ,textAlign:'justify'}}>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industrys standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.</Text>
         <Text style={{ color: COLORS.darkpurple, fontSize: 16,  marginTop:5 ,textAlign:'justify'}}>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industrys standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.</Text>
-        <View style={{backgroundColor:COLORS.overseaspurple, width:'30%', flexDirection:'row', paddingVertical:10, alignItems:'center', marginTop:20, borderRadius:10, marginBottom:20}}>
+        {/* <View style={{backgroundColor:COLORS.overseaspurple, width:'30%', flexDirection:'row', paddingVertical:10, alignItems:'center', marginTop:20, borderRadius:10, marginBottom:20}}>
             <Image source={require('../images/share.png')} style={{width:28, height:28, resizeMode:'contain', marginLeft:10}}/>
             <Text style={{color:'#FFF', fontSize:20, marginLeft:10}}>Share</Text>
-        </View>
+        </View> */}
     </View>
     </ScrollView>
     </SafeAreaView>

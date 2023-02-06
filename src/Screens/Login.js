@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View, SafeAreaView, StatusBar, Image, TouchableOpacity, ScrollView } from 'react-native'
-import React,{useState} from 'react'
-import { TextInput } from 'react-native-paper';
+import React,{useState, useEffect} from 'react'
+import { TextInput, Icon } from 'react-native-paper';
 import { ButtonStyle } from '../Custom/CustomView';
 import { COLORS } from '../Constant/Colors';
 import StringsOfLanguages from '../Constant/LanguageStrings'
@@ -22,9 +22,16 @@ const Login = ({navigation}) => {
     const [mobile, setMobile] = useState("");
     const [user, setUser] = useState();
     const [password, setPassword] = useState("");
-
+    const [ftoken, setFToken] = useState("");
+    const [isLoading, setIsLoading] = useState(false);
     const [state, setState] = useState({userInfo: {}});
 
+    useEffect(()=>{
+      getftoken()
+    },[])
+    const getftoken = async() => {
+      setFToken(await LocalStorage.getFcmToken() || "")
+    }
     // getInfoFromToken = token => {
     //   const PROFILE_REQUEST_PARAMS = {
     //     fields: {
@@ -79,12 +86,22 @@ const Login = ({navigation}) => {
     // getPR()
 
     const onLoginHandler = async() => {
-      
+      if (!mobile) {
+        Toast.show('Please enter your number');
+        return;
+      }
+      if (!password) {
+        Toast.show('Please enter your password');
+        return;
+      }
+      // const tokenfcm = (await LocalStorage.getFcmToken() || "")
+      setIsLoading(true)
       const body = {
         number:mobile,
-        password:password
+        password:password,
+        fcmToken : ftoken
       }
-      
+      // alert(JSON.stringify(body,null,2))
       // return
       const res = await Api.boomSignin(body)
       // alert(JSON.stringify(res,null,2))
@@ -105,6 +122,7 @@ const Login = ({navigation}) => {
       // const jsonres = await response.json()
       // alert(JSON.stringify(jsonres,null,2))
       // console.log(jsonres)
+      console.log(res)
       const {status, user, token, message} = res
       if(status){
         Toast.show(message)
@@ -112,12 +130,14 @@ const Login = ({navigation}) => {
         LocalStorage.setToken(token);
         // getFcmToken()
         _SetAuthToken(token);
+        setIsLoading(false)
         navigation.reset({
           index: 0,
           routes: [{ name: 'DrawerNavigator' }]
         })
       }else{
-        alert(jsonres.message)
+        setIsLoading(false)
+        Toast.show(res.data.message)
       }
       // const body = {
       //   number: mobile,
@@ -129,11 +149,14 @@ const Login = ({navigation}) => {
       // console.log(res)
       // alert(JSON.stringify(res,null,2))
     }
+
   return (
       <SafeAreaView style={{ flex: 1, backgroundColor: '#FFF' }}>
           <StatusBar barStyle="dark-content" backgroundColor="#FFF" />
           <Image style={{ width: '60%', resizeMode: 'contain', alignSelf: 'center' }} source={require('../images/logo.png')} />
-          <ScrollView style={{marginHorizontal:20}}>
+          <ScrollView 
+          showsVerticalScrollIndicator={false}
+          style={{marginHorizontal:20}}>
           <TextInput
               label={StringsOfLanguages.mobile}
               value={mobile}
@@ -143,25 +166,26 @@ const Login = ({navigation}) => {
               activeUnderlineColor={COLORS.overseaspurple}
               style={{marginBottom:30, backgroundColor:'#FFF'}}
               Outlined={'disabled'}
-              onChangeText={text => setMobile(text)}
+              onChangeText={text => setMobile(text.replace(/[^0-9]/g, ''))}
           />
           <TextInput
               label={StringsOfLanguages.password}
               underlineColor={COLORS.overseaspurple}
               activeUnderlineColor={COLORS.overseaspurple}
               secureTextEntry
+              right={<Image source={require('../images/arrowright.png')}/>}
               style={{marginBottom:30, backgroundColor:'#FFF'}}
               value={password}
               Outlined={'disabled'}
               onChangeText={text => setPassword(text)}
           />
-          <TouchableOpacity onPress={()=>navigation.navigate('OTP')} style={{ marginTop:10}}><Text style={{textAlign:'right', color:'gray'}}>{StringsOfLanguages.forgotpassword}</Text></TouchableOpacity>
+          <TouchableOpacity onPress={()=> navigation.navigate("ForgotPassword")} style={{ marginTop:10}}><Text style={{textAlign:'right', color:'gray'}}>{StringsOfLanguages.forgotpassword}</Text></TouchableOpacity>
           <View style={{ width: '100%', marginBottom:20, marginTop:30 }}>
               <ButtonStyle
                   title={StringsOfLanguages.login}
                 //   height={52}
                   bgColor={'#261750'}
-                  // loader={state.isLoading}
+                  loader={isLoading}
                   onPress={() => {
                     // navigation.reset({
                     //   index: 0,
@@ -180,9 +204,9 @@ const Login = ({navigation}) => {
             <Image source={require('../images/google.png')}style={{width:24, height:24, resizeMode:'contain'}}/>
             <Text style={{color:'#fff', fontSize:18,marginLeft:10}}>Continue with Google</Text>
           </TouchableOpacity> */}
-          <View style={{ flexDirection: 'row',marginTop:20, alignSelf:'center' }}>
+          <View style={{ flexDirection: 'row',marginTop:20, alignSelf:'center', alignItems:'center' }}>
             <Text style={{ color: 'gray' }}>{StringsOfLanguages.noaccount}? </Text>
-            <TouchableOpacity onPress={()=>navigation.navigate('Register')}><Text style={{ color: COLORS.overseaspurple, textDecorationLine:'underline' }}> {StringsOfLanguages.register}</Text></TouchableOpacity>
+            <TouchableOpacity onPress={()=>navigation.navigate('Register')}><Text style={{ color: COLORS.overseaspurple, textDecorationLine:'underline', fontSize:16 }}> {StringsOfLanguages.register}</Text></TouchableOpacity>
           </View>
         {/* <GoogleSigninButton
           style={{ width: 192, height: 48 }}

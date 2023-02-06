@@ -47,6 +47,7 @@ const GetStarted = ({navigation}) => {
         // ref="swiper"
         showsButtons={false}
         loop={true}
+        removeClippedSubviews={false}
         autoplay={autoplay}
         dot={<View style={styles.dot} />}
         activeDot={<View style={styles.activeDot} />}
